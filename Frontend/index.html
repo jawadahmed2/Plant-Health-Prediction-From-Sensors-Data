@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>PHPS</title>
+	<!--Import the ajax library for sending and receiving response-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<style>
+		body {
+			margin: 0;
+			font-family: Arial, sans-serif;
+		}
+
+		.header {
+			background-color: #333;
+			color: #fff;
+			padding: 20px;
+			text-align: center;
+		}
+
+		.container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-wrap: wrap;
+			padding: 20px;
+		}
+
+		.box {
+			flex-basis: 40%;
+			padding: 20px;
+			margin: 20px;
+			background-color: #f1f1f1;
+			border-radius: 5px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+		}
+
+		.box h2 {
+			margin-top: 0;
+		}
+
+		.box form {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.box textarea {
+			height: 200px;
+			padding: 10px;
+			margin-bottom: 10px;
+			border-radius: 5px;
+			border: none;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			resize: none;
+		}
+
+		.box button {
+			padding: 10px;
+			background-color: #333;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+
+		.box button:hover {
+			background-color: #555;
+		}
+
+		.footer {
+			background-color: #333;
+			color: #fff;
+			padding: 10px;
+			text-align: center;
+		}
+
+		input[type="name"] {
+			width: 50.5%;
+			padding: 10px;
+			border-radius: 5px;
+			border: none;
+			box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+			margin-top: 5px;
+			margin-bottom: 20px;
+		}
+
+		button[type="submit"] {
+			width: 40.5%;
+			padding: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header">
+		<h1>Plant Health Prediction System</h1>
+	</div>
+	<div class="container">
+		<div class="box">
+			<h2>Enter Environment Variable Values</h2>
+			<form method="POST">
+
+				<input type="name" id="humidity" name="humidity" placeholder="Enter Humidity Value e.g 50.0">
+
+				<input type="name" id="nitrogen_level" name="nitrogen_level"
+					placeholder="Enter Nitrogen Level Value e.g 30.0">
+
+				<input type="name" id="ambient_temperature" name="ambient_temperature"
+					placeholder="Enter Ambient Temperature Value e.g 25">
+
+				<input type="name" id="presence_of_sunlight" name="presence_of_sunlight"
+					placeholder="Enter Presence Of Sunlight Value e.g 1">
+
+				<button type="submit">PREDICT</button>
+			</form>
+
+			<h2 id="result" style="margin-top: 5%;">RESULT : </h2>
+		</div>
+		<div class="box">
+			<section id="about" class="section">
+				<div class="container">
+					<div class="section-heading">
+						<h2>About</h2>
+						<p class="text-muted" style="text-align: justify;">
+							In this section, I provide insights into our predictive plant health monitoring and
+							analysis project, a key component of the Smart Planter Project. Our aim is to utilize
+							advanced predictive modeling techniques and machine learning algorithms to effectively
+							monitor and analyze plant health based on a variety of environmental parameters.
+						</p>
+					</div>
+					<div class="row">
+						<div class="col-lg-6">
+							<h3>Objective</h3>
+							<p style="text-align: justify;">
+								Our primary objective is to create a precise predictive model that can forecast plant
+								health accurately, empowering users to optimize plant care. Additionally, we aspire to
+								actively contribute to the development of a user-friendly Smart Planter System that
+								provides real-time insights into plant health, enhancing gardening and farming
+								practices.
+							</p>
+						</div>
+						<div class="col-lg-6">
+							<!-- Additional content here if needed -->
+						</div>
+					</div>
+				</div>
+			</section>
+
+
+		</div>
+	</div>
+	<div class="footer">
+		<p>Plant Health Prediction System &copy; 2023</p>
+	</div>
+
+	<script>
+		$(document).ready(function () {
+			$('form').on('submit', function (e) {
+				e.preventDefault(); // Prevent default form submission
+				// Clear the previous result or set to a loading message
+				$('#result').text('Loading...');
+				// Get values from the input fields
+				var humidity = $('#humidity').val();
+				var nitrogen_level = $('#nitrogen_level').val();
+				var ambient_temperature = $('#ambient_temperature').val();
+				var presence_of_sunlight = $('#presence_of_sunlight').val();
+
+				// Send AJAX POST request to the API
+				$.ajax({
+					url: 'http://127.0.0.1:5000/predict/api',
+					type: 'POST',
+					contentType: 'application/json;charset=UTF-8',
+					data: JSON.stringify({
+						humidity: humidity,
+						nitrogen_level: nitrogen_level,
+						ambient_temperature: ambient_temperature,
+						presence_of_sunlight: presence_of_sunlight
+					}),
+					success: function (response) {
+						// Display the result in the specified <h2> tag
+						$('#result').text('RESULT : ' + response.prediction);
+					},
+					error: function (error) {
+						console.log(error);
+						alert('Error making prediction');
+					}
+				});
+			});
+		});
+	</script>
+
+</body>
+
+</html>
