@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = "planthealthcare"
 CORS(app)  # Enabling CORS
 
-# Load the Neural Networks Trained model Weights and Scaler
+# Load the KNN Trained model Weights and Scaler
 print('Wait Model Is Loading')
 
 # Load the saved scaler
@@ -23,11 +23,11 @@ with open(scalar_file, 'rb') as file:
     loaded_scaler = pickle.load(file)  # Loading the scaler object
 
 # Get the absolute path to the pickle file containing the trained model
-filename = join(dirname(realpath(__file__)), 'neural_networks.pickle')
+filename = join(dirname(realpath(__file__)), 'best_knn_classifier.pickle')
 
 # Load the trained model
 with open(filename, 'rb') as file:
-    classifier = pickle.load(file)  # Loading the model object
+    knn_classifier = pickle.load(file)  # Loading the model object
 
 print('Successfully Loaded')
 
@@ -52,21 +52,29 @@ def predict():
         try:
             data = request.json  # Getting the data sent in JSON format
             # Extracting individual parameters from the received JSON data
-            humidity = float(data['humidity'])
-            nitrogen_level = float(data['nitrogen_level'])
-            ambient_temperature = float(data['ambient_temperature'])
-            presence_of_sunlight = float(data['presence_of_sunlight'])
+            Light = float(data['light'])
+            Nitrogen = float(data['nitrogen'])
+            Phosphorus = float(data['phosphorus'])
+            Potassium = float(data['potassium'])
+            Humidity = float(data['humidity'])
+            Temp1 = float(data['temp1'])
+            Temp2 = float(data['temp2'])
+            Moisture = float(data['moisture'])
 
             # Preparing the input data
-            input_data = np.array([[humidity, nitrogen_level, ambient_temperature, presence_of_sunlight]])
-            new_data = loaded_scaler.transform(input_data)  # Scaling the input data using the loaded scaler
+            input_data = np.array(
+                [[Light, Nitrogen, Phosphorus,	Potassium,	 Humidity,	Temp1,	Temp2,	 Moisture]])
 
-            my_prediction = classifier.predict(new_data)  # Making prediction using the loaded model
-            predicted_class = np.argmax(my_prediction, axis=1)  # Getting the class with the highest probability
+            # Scaling the input data using the loaded scaler
+            new_data = loaded_scaler.transform(input_data)
+
+            # Making prediction using the loaded model
+            my_prediction = knn_classifier.predict(new_data)
 
             # Mapping the predicted class to the respective plant health category
             class_mapping = {0: 'Healthy', 1: 'Moderate', 2: 'Unhealthy'}
-            final_result = class_mapping[predicted_class[0]]  # Getting the final result
+            # Getting the final result
+            final_result = class_mapping[my_prediction[0]]
 
             # Returning the prediction as JSON
             return jsonify(status='success', prediction=final_result.upper())

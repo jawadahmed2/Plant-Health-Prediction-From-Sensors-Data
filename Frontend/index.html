@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
@@ -100,17 +101,21 @@
 		<div class="box">
 			<h2>Enter Environment Variable Values</h2>
 			<form method="POST">
+				<input type="name" id="light" name="light" placeholder="Enter Light Value e.g 500.0">
+
+				<input type="name" id="nitrogen" name="nitrogen" placeholder="Enter Nitrogen Level Value e.g 120.0">
+
+				<input type="name" id="phosphorus" name="phosphorus" placeholder="Enter Phosphorus Value e.g 40.0">
+
+				<input type="name" id="potassium" name="potassium" placeholder="Enter Potassium Value e.g 120.0">
 
 				<input type="name" id="humidity" name="humidity" placeholder="Enter Humidity Value e.g 50.0">
 
-				<input type="name" id="nitrogen_level" name="nitrogen_level"
-					placeholder="Enter Nitrogen Level Value e.g 30.0">
+				<input type="name" id="temp1" name="temp1" placeholder="Enter Temperature Value in Celsius e.g 20.0">
 
-				<input type="name" id="ambient_temperature" name="ambient_temperature"
-					placeholder="Enter Ambient Temperature Value e.g 25">
+				<input type="name" id="temp2" name="temp2" placeholder="Enter Temperature Value in Fahrenheit e.g 68.0">
 
-				<input type="name" id="presence_of_sunlight" name="presence_of_sunlight"
-					placeholder="Enter Presence Of Sunlight Value e.g 1">
+				<input type="name" id="moisture" name="moisture" placeholder="Enter Moisture Value e.g 40.0">
 
 				<button type="submit">PREDICT</button>
 			</form>
@@ -161,10 +166,14 @@
 				// Clear the previous result or set to a loading message
 				$('#result').text('Loading...');
 				// Get values from the input fields
+				var light = $('#light').val();
 				var humidity = $('#humidity').val();
-				var nitrogen_level = $('#nitrogen_level').val();
-				var ambient_temperature = $('#ambient_temperature').val();
-				var presence_of_sunlight = $('#presence_of_sunlight').val();
+				var nitrogen = $('#nitrogen').val();
+				var temp1 = $('#temp1').val();
+				var temp2 = $('#temp2').val();
+				var moisture = $('#moisture').val();
+				var phosphorus = $('#phosphorus').val();
+				var potassium = $('#potassium').val();
 
 				// Send AJAX POST request to the API
 				$.ajax({
@@ -172,10 +181,14 @@
 					type: 'POST',
 					contentType: 'application/json;charset=UTF-8',
 					data: JSON.stringify({
+						light: light,
 						humidity: humidity,
-						nitrogen_level: nitrogen_level,
-						ambient_temperature: ambient_temperature,
-						presence_of_sunlight: presence_of_sunlight
+						nitrogen: nitrogen,
+						temp1: temp1,
+						temp2: temp2,
+						moisture: moisture,
+						phosphorus: phosphorus,
+						potassium: potassium
 					}),
 					success: function (response) {
 						// Display the result in the specified <h2> tag
