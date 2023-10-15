@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'corsheaders',
-    'predictions',
+    'django_extensions',
 
 ]
 
@@ -129,4 +129,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins during development. You can customize this in production.
 
-
+# Define the API URL
+API_URL = 'http://127.0.0.1:8000/predict/api/'
