@@ -53,7 +53,7 @@ def predict_at_time(date, interval_start, interval_end):
         end_time = time.fromisoformat(interval_end)
 
         # Combine the date and start time to get the target datetime
-        target_datetime = datetime.combine(date, start_time)
+        target_datetime = datetime.combine(date, start_time) # 2021-10-09 00:00:00
 
         # Check if a prediction already exists for this target datetime
         existing_prediction = PredictedData.objects.filter(
@@ -182,19 +182,23 @@ def main():
         ("18:00:00", "23:59:59"),  # 6:00 PM
     ]
 
-    # Get the current date
+    # Get the current date and time
     current_date = datetime.now().date()
+    current_time = datetime.now().time()
     # print(current_date)
 
     # custom_date = '2023-10-09'
     # current_date = datetime.strptime(custom_date, '%Y-%m-%d')
 
-    # Iterate over each prediction time and make predictions
-    for start_time, end_time in prediction_times:
-        predict_at_time(current_date, start_time, end_time)
+    # Check if it's the evening (between 18:00 and 23:59)
+    evening_start = datetime.strptime("18:00:00", "%H:%M:%S").time()
+    evening_end = datetime.strptime("23:59:59", "%H:%M:%S").time()
 
-    # Make a prediction for daily average sensor data
-    predict_daily_average()
+    if evening_start <= current_time <= evening_end:
+        predict_daily_average()
+    else:
+        for start_time, end_time in prediction_times:
+            predict_at_time(current_date, start_time, end_time)
 
 # call the main function
 main()
