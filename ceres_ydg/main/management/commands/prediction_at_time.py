@@ -131,46 +131,50 @@ def predict_daily_average():
             print(f"Prediction for {current_date} already exists.")
             return
 
-        # Fetch daily average sensor data
-        daily_avg_data = DailyAvg.objects.all().latest('date')
+        # Fetch daily average sensor data for the current date
+        daily_avg_data = DailyAvg.objects.filter(date=current_date).first()
 
-        # Create a dictionary of daily average sensor data
-        sensor_data_dict = {
-            "light": daily_avg_data.light_avg,
-            "nitrogen": daily_avg_data.nitrogen_data_avg,
-            "phosphorus": daily_avg_data.phosphorus_data_avg,
-            "potassium": daily_avg_data.potassium_data_avg,
-            "humidity": daily_avg_data.relative_humidity_avg,
-            "temp1": daily_avg_data.temp_c_avg,
-            "temp2": daily_avg_data.temp_f_avg,
-            "moisture": daily_avg_data.soil_moisture_avg,
-        }
+        if daily_avg_data:
+            # Create a dictionary of daily average sensor data
+            sensor_data_dict = {
+                "light": daily_avg_data.light_avg,
+                "nitrogen": daily_avg_data.nitrogen_data_avg,
+                "phosphorus": daily_avg_data.phosphorus_data_avg,
+                "potassium": daily_avg_data.potassium_data_avg,
+                "humidity": daily_avg_data.relative_humidity_avg,
+                "temp1": daily_avg_data.temp_c_avg,
+                "temp2": daily_avg_data.temp_f_avg,
+                "moisture": daily_avg_data.soil_moisture_avg,
+            }
 
-        # Make a prediction based on the daily average sensor data
-        prediction = make_prediction(sensor_data_dict)
+            # Make a prediction based on the daily average sensor data
+            prediction = make_prediction(sensor_data_dict)
 
-        if prediction:
-            # Save the prediction to the PredictedData model
-            current_time = get_current_time()
-            predicted_data = PredictedData(
-                date=current_date,
-                time=current_time,
-                light=sensor_data_dict["light"],
-                nitrogen_data=sensor_data_dict["nitrogen"],
-                phosphorus_data=sensor_data_dict["phosphorus"],
-                potassium_data=sensor_data_dict["potassium"],
-                relative_humidity=sensor_data_dict["humidity"],
-                temp_c=sensor_data_dict["temp1"],
-                temp_f=sensor_data_dict["temp2"],
-                soil_moisture=sensor_data_dict["moisture"],
-                prediction=prediction,
-            )
-            predicted_data.save()
-            print(f"Daily average prediction saved for {current_date} {current_time}: {prediction}")
+            if prediction:
+                # Save the prediction to the PredictedData model
+                current_time = get_current_time()
+                predicted_data = PredictedData(
+                    date=current_date,
+                    time=current_time,
+                    light=sensor_data_dict["light"],
+                    nitrogen_data=sensor_data_dict["nitrogen"],
+                    phosphorus_data=sensor_data_dict["phosphorus"],
+                    potassium_data=sensor_data_dict["potassium"],
+                    relative_humidity=sensor_data_dict["humidity"],
+                    temp_c=sensor_data_dict["temp1"],
+                    temp_f=sensor_data_dict["temp2"],
+                    soil_moisture=sensor_data_dict["moisture"],
+                    prediction=prediction,
+                )
+                predicted_data.save()
+                print(f"Daily average prediction saved for {current_date} {current_time}: {prediction}")
+            else:
+                print(f"Daily average prediction failed for {current_date} {get_current_time()}.")
         else:
-            print(f"Daily average prediction failed for {current_date} {get_current_time()}.")
+            print(f"Daily average sensor data not available for {current_date}.")
     except Exception as e:
         print(f"Error: {e}")
+
 
 
 def main():
@@ -184,21 +188,18 @@ def main():
 
     # Get the current date and time
     current_date = datetime.now().date()
-    current_time = datetime.now().time()
     # print(current_date)
 
     # custom_date = '2023-10-09'
     # current_date = datetime.strptime(custom_date, '%Y-%m-%d')
 
-    # Check if it's the evening (between 18:00 and 23:59)
-    evening_start = datetime.strptime("18:00:00", "%H:%M:%S").time()
-    evening_end = datetime.strptime("23:59:59", "%H:%M:%S").time()
+    # Make predictions for each time interval
+    for start_time, end_time in prediction_times:
+        predict_at_time(current_date, start_time, end_time)
 
-    if evening_start <= current_time <= evening_end:
-        predict_daily_average()
-    else:
-        for start_time, end_time in prediction_times:
-            predict_at_time(current_date, start_time, end_time)
+    # Make a prediction for daily average sensor data
+    predict_daily_average()
+
 
 # call the main function
 main()
